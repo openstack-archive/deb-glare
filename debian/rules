@@ -1,0 +1,53 @@
+#!/usr/bin/make -f
+
+include /usr/share/openstack-pkg-tools/pkgos.make
+
+
+%:
+	dh $@ --buildsystem=python_distutils --with python2,sphinxdoc,systemd
+
+override_dh_auto_clean:
+	find . -iname '*.pyc' -delete
+	rm -f debian/*.init debian/*.upstart debian/*.service
+	rm -rf build
+
+override_dh_auto_test:
+ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
+	@echo "===> Running tests"
+	set -e ; set -x ; for i in 2.7 ; do \
+		PYMAJOR=`echo $$i | cut -d'.' -f1` ; \
+		echo "===> Testing with python$$i (python$$PYMAJOR)" ; \
+		rm -rf .testrepository ; \
+		testr-python$$PYMAJOR init ; \
+		TEMP_REZ=`mktemp -t` ; \
+		PYTHONPATH=$(CURDIR) PYTHON=python$$i testr-python$$PYMAJOR run --subunit --parallel 'glare\.tests\.unit\.*' | tee $$TEMP_REZ | subunit2pyunit ; \
+		cat $$TEMP_REZ | subunit-filter -s --no-passthrough | subunit-stats ; \
+		rm -f $$TEMP_REZ ; \
+		testr-python$$PYMAJOR slowest ; \
+        done
+endif
+
+override_dh_auto_install:
+	echo "Please do nothing"
+
+override_dh_installman:
+ifeq (,$(findstring nodocs, $(DEB_BUILD_OPTIONS)))
+	sphinx-build $(SPHINXOPTS) -b man doc/source doc/build/man
+	dh_installman -O--buildsystem=python_distutils
+endif
+
+override_dh_sphinxdoc:
+ifeq (,$(findstring nodocs, $(DEB_BUILD_OPTIONS)))
+	sphinx-build $(SPHINXOPTS) -b html doc/source $(CURDIR)/debian/python-glare-doc/usr/share/doc/python-glare-doc/html
+	dh_sphinxdoc -O--buildsystem=python_distutils
+endif
+
+override_dh_install:
+	rm -rf $(CURDIR)/debian/tmp
+	python2.7 setup.py install --install-layout=deb --root $(CURDIR)/debian/tmp
+	dh_install -O--buildsystem=python_distutils --fail-missing
+	mkdir -p $(CURDIR)/debian/glare-common/usr/share/glare-common
+	PYTHONPATH=$(CURDIR)/debian/tmp/usr/lib/python2.7/dist-packages oslo-config-generator \
+		--config-file=etc/oslo-config-generator/glare.conf
+
+	install -D -m 0664 etc/glare.conf.sample $(CURDIR)/debian/glare-common/etc/glare/glare.conf

@@ -1,0 +1,9 @@
+Document: glare-doc
+Title: Glare Documentation
+Author: OpenStack
+Abstract: Sphinx documentation for Glare
+Section: Network/File Transfer
+
+Format: HTML
+Index: /usr/share/doc/python-glare-doc/html/index.html
+Files: /usr/share/doc/python-glare-doc/html/*
