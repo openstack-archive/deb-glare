@@ -6,7 +6,7 @@ set -e
 
 if [ "$1" = "configure" ] || [ "$1" = "reconfigure" ] ; then
 	. /usr/share/debconf/confmodule
-	pkgos_register_endpoint_postinst glare glare image "Glare Artifact Repository" 9494 ""
+	pkgos_register_endpoint_postinst glare glare artifact "Glare Artifact Repository" 9494 ""
 	db_stop
 fi
 
