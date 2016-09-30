@@ -9,8 +9,16 @@ include /usr/share/openstack-pkg-tools/pkgos.make
 override_dh_auto_clean:
 	find . -iname '*.pyc' -delete
 	rm -f debian/*.init debian/*.upstart debian/*.service
-	rm -f debian/glare-common.postinst
+	rm -f debian/glare-common.postinst debian/glare-common.config debian/glare-api.config debian/glare-api.postinst
 	rm -rf build
+
+override_dh_auto_build:
+	dh_auto_build
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func glare-common.config
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func glare-common.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func glare-api.config
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func glare-api.postinst
+
 
 override_dh_auto_test:
 ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
