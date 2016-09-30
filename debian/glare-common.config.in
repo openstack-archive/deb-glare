@@ -9,8 +9,8 @@ CONF=/etc/glare/glare.conf
 
 pkgos_var_user_group glare
 pkgos_dbc_read_conf -pkg glare-common ${CONF} database connection glare $@
-pkgos_rabbit_read_conf ${CINDER_CONF} oslo_messaging_rabbit glare
-pkgos_read_admin_creds ${CINDER_CONF} keystone_authtoken glare
+pkgos_rabbit_read_conf ${CONF} oslo_messaging_rabbit glare
+pkgos_read_admin_creds ${CONF} keystone_authtoken glare
 
 db_go
 
