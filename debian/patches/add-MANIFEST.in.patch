@@ -1,0 +1,10 @@
+Description: Add MANIFEST.in
+ This enables the packaging of alembic migrations
+Author: Thomas Goirand <zigo@debian.org>
+Forwarded: not-needed
+Last-Update: 2016-09-30
+
+--- /dev/null	2016-07-11 13:48:55.660838113 +0000
++++ b/MANIFEST.in	2016-09-30 18:40:28.673092265 +0000
+@@ -0,0 +1 @@
++recursive-include glare/db *
