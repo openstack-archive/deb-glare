@@ -2,11 +2,28 @@
 
 set -e
 
-
 #PKGOS-INCLUDE#
 
+CONF=/etc/glare/glare.conf
+
 if [ "$1" = "configure" ] || [ "$1" = "reconfigure" ] ; then
+	. /usr/share/debconf/confmodule
+	. /usr/share/dbconfig-common/dpkg/postinst
 	pkgos_var_user_group glare /bin/sh
+
+	pkgos_write_new_conf glare glare-paste.ini
+	pkgos_write_new_conf glare glare-swift.conf
+
+	# Do the db creation using dbconfig-common
+	db_get glare/configure_db
+	if [ "$RET" = "true" ] ; then
+		pkgos_dbc_postinst ${CONF} database connection glare $@
+		echo "Now doing glare-db-manage --config-file /etc/glare/glare.conf upgrade: this may take a while..."
+                su glare -s /bin/sh -c "glare-db-manage --config-file /etc/glare/glare.conf upgrade"
+	fi
+	pkgos_rabbit_write_conf ${CONF} oslo_messaging_rabbit glare
+	pkgos_write_admin_creds ${CONF} keystone_authtoken glare
+	db_stop
 fi
 
 #DEBHELPER#
