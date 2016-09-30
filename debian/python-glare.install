@@ -1,3 +1,2 @@
-usr/bin/glare-api
-usr/bin/glare-db-manage
+usr/bin/*
 usr/lib/python2*/dist-packages/*

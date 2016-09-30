@@ -119,7 +119,7 @@ Depends: python-alembic (>= 0.8.4),
          python-wsme (>= 0.8),
          ${misc:Depends},
          ${python:Depends},
-Description: Artifact Repository - Python library
+Description: OpenStack Artifact Repository - Python 2.7 library
  The Glance project provides services for discovering, registering, and
  retrieving virtual machine images over the cloud. They may be stand-alone
  services, or may be used to deliver images from object stores, such as
@@ -133,32 +133,32 @@ Depends: glare-common (= ${source:Version}),
          ${misc:Depends},
          ${ostack-lsb-base},
          ${python:Depends},
-Description: Artifact Repository - API server
+Description: OpenStack Artifact Repository - API server
  The Glance project provides services for discovering, registering, and
  retrieving virtual machine images over the cloud. They may be stand-alone
  services, or may be used to deliver images from object stores, such as
  OpenStack's Swift service, to Nova's compute nodes.
  .
- This package contains the Glance API server.
+ This package contains the Glare API server.
 
 Package: glare-common
 Architecture: all
 Depends: python-glare (= ${source:Version}),
          ${misc:Depends},
          ${python:Depends},
-Description: Artifact Repository - common files
+Description: OpenStack Artifact Repository - common files
  Glare (from GLare Artifact REpository) is a service that provides access
  to a unified catalog of structured meta-information as well as related
  binary data (these structures are also called 'artifacts').
  .
- This package contains common files for Glance.
+ This package contains common files for Glare.
 
 Package: python-glare-doc
 Architecture: all
 Section: doc
 Depends: ${misc:Depends},
          ${sphinxdoc:Depends},
-Description: OpenStack Image Registry and Delivery Service - Documentation
+Description: OpenStack Artifact Repository - Documentation
  Glare (from GLare Artifact REpository) is a service that provides access
  to a unified catalog of structured meta-information as well as related
  binary data (these structures are also called 'artifacts').

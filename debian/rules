@@ -46,9 +46,24 @@ endif
 override_dh_install:
 	rm -rf $(CURDIR)/debian/tmp
 	python2.7 setup.py install --install-layout=deb --root $(CURDIR)/debian/tmp
-	dh_install -O--buildsystem=python_distutils --fail-missing
 	mkdir -p $(CURDIR)/debian/glare-common/usr/share/glare-common
 	PYTHONPATH=$(CURDIR)/debian/tmp/usr/lib/python2.7/dist-packages oslo-config-generator \
-		--config-file=etc/oslo-config-generator/glare.conf
+		--output-file $(CURDIR)/debian/glare-common/usr/share/glare-common/glare.conf \
+                --wrap-width 140 \
+		--namespace glare \
+		--namespace glance.store \
+		--namespace keystonemiddleware.auth_token \
+		--namespace oslo.concurrency \
+		--namespace oslo.db \
+		--namespace oslo.db.concurrency \
+		--namespace oslo.log \
+		--namespace oslo.messaging \
+		--namespace oslo.middleware.cors \
+		--namespace oslo.middleware.http_proxy_to_wsgi \
+		--namespace oslo.policy
 
-	install -D -m 0664 etc/glare.conf.sample $(CURDIR)/debian/glare-common/etc/glare/glare.conf
+	cp etc/glare-paste.ini $(CURDIR)/debian/glare-common/usr/share/glare-common
+	cp etc/glare/glare-swift.conf.sample $(CURDIR)/debian/glare-common/usr/share/glare-common
+
+	rm -rf $(CURDIR)/debian/usr/etc
+	dh_install -O--buildsystem=python_distutils --fail-missing
