@@ -47,8 +47,9 @@ endif
 
 override_dh_sphinxdoc:
 ifeq (,$(findstring nodocs, $(DEB_BUILD_OPTIONS)))
-	sphinx-build $(SPHINXOPTS) -b html doc/source $(CURDIR)/debian/python-glare-doc/usr/share/doc/python-glare-doc/html
-	dh_sphinxdoc -O--buildsystem=python_distutils
+	echo "No doc for now."
+#	sphinx-build $(SPHINXOPTS) -b html doc/source $(CURDIR)/debian/glare-doc/usr/share/doc/glare-doc/html
+#	dh_sphinxdoc -O--buildsystem=python_distutils
 endif
 
 override_dh_install:

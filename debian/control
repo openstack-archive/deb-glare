@@ -153,14 +153,14 @@ Description: OpenStack Artifact Repository - common files
  .
  This package contains common files for Glare.
 
-Package: python-glare-doc
-Architecture: all
-Section: doc
-Depends: ${misc:Depends},
-         ${sphinxdoc:Depends},
-Description: OpenStack Artifact Repository - Documentation
- Glare (from GLare Artifact REpository) is a service that provides access
- to a unified catalog of structured meta-information as well as related
- binary data (these structures are also called 'artifacts').
- .
- This package contains the documentation.
+#Package: glare-doc
+#Architecture: all
+#Section: doc
+#Depends: ${misc:Depends},
+#         ${sphinxdoc:Depends},
+#Description: OpenStack Artifact Repository - Documentation
+# Glare (from GLare Artifact REpository) is a service that provides access
+# to a unified catalog of structured meta-information as well as related
+# binary data (these structures are also called 'artifacts').
+# .
+# This package contains the documentation.
