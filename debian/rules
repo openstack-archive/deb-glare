@@ -9,6 +9,7 @@ include /usr/share/openstack-pkg-tools/pkgos.make
 override_dh_auto_clean:
 	find . -iname '*.pyc' -delete
 	rm -f debian/*.init debian/*.upstart debian/*.service
+	rm -f debian/glare-common.postinst
 	rm -rf build
 
 override_dh_auto_test:
