@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "purge" ] && [ -f /usr/share/debconf/confmodule ] ; then
+	if [ -f /usr/share/debconf/confmodule ] ; then
+		. /usr/share/debconf/confmodule
+
+		db_get glare/configure_db || true
+		if [ "$RET" = "true" ]; then
+			if [ -f /usr/share/dbconfig-common/dpkg/postrm ]; then
+				. /usr/share/dbconfig-common/dpkg/postrm
+				dbc_go glare-common $@
+			else
+				rm -f /etc/dbconfig-common/glare-common.conf
+				if which ucf >/dev/null 2>&1; then
+					ucf --purge /etc/dbconfig-common/glare-common.conf
+					ucfr --purge glare-common /etc/dbconfig-common/glare-common.conf
+				fi
+			fi
+		fi
+	fi
+
+	rm -f /etc/glare/glare.conf /etc/glare/glare-paste.ini /etc/glare/glare-swift.conf
+	rmdir --ignore-fail-on-non-empty /etc/glare || true
+	rm -rf /var/lib/glare /var/log/glare /var/lock/glare
+fi
+
+#DEBHELPER#
+
+exit 0
