@@ -15,4 +15,3 @@
 DESC="OpenStack Artifact Repository API"
 PROJECT_NAME=glare
 NAME=${PROJECT_NAME}-api
-CONFIG_FILE=/etc/${PROJECT_NAME}/glare-api.conf
