@@ -71,6 +71,9 @@ override_dh_install:
 		--namespace oslo.middleware.http_proxy_to_wsgi \
 		--namespace oslo.policy
 
+	# Set a valid default. /tmp is a security problem.
+	pkgos-fix-config-default $(CURDIR)/debian/glare-common/usr/share/glare-common/glare.conf oslo_concurrency lock_path /var/lock/glare
+
 	cp etc/glare-paste.ini $(CURDIR)/debian/glare-common/usr/share/glare-common
 	cp etc/glare-swift.conf.sample $(CURDIR)/debian/glare-common/usr/share/glare-common/glare-swift.conf
 
