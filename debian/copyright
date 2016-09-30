@@ -4,6 +4,13 @@ Source: https://github.com/openstack/glare
 
 Files: *
 Copyright: (c) 2016, Mikhail Fedosin <mfedosin@mirantis.com>
+           (c) 2010-2016, OpenStack Foundation
+           (c) 2016, Mirantis, Inc.
+           (c) 2013, Hewlett-Packard Development Company, L.P.
+           (c) 2014, SoftLayer Technologies, Inc.
+           (c) 2014, IBM Corp.
+           (c) 2010, United States Government
+           (c) 2006, 2008, Junio C Hamano
 License: Apache-2
 
 Files: debian/*
