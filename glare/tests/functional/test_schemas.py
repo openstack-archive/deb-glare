@@ -15,11 +15,8 @@
 
 import jsonschema
 
-from oslo_serialization import jsonutils
-import requests
-
 from glare.common import utils
-from glare.tests import functional
+from glare.tests.functional import base
 
 fixture_base_props = {
     u'activated_at': {
@@ -32,6 +29,7 @@ fixture_base_props = {
                         u'lt',
                         u'lte'],
         u'format': u'date-time',
+        u'glareType': u'DateTime',
         u'readOnly': True,
         u'required_on_activate': False,
         u'sortable': True,
@@ -47,6 +45,7 @@ fixture_base_props = {
                         u'lt',
                         u'lte'],
         u'format': u'date-time',
+        u'glareType': u'DateTime',
         u'readOnly': True,
         u'sortable': True,
         u'type': u'string'},
@@ -55,6 +54,7 @@ fixture_base_props = {
                      u'filter_ops': [u'eq',
                                      u'neq',
                                      u'in'],
+                     u'glareType': u'String',
                      u'maxLength': 4096,
                      u'mutable': True,
                      u'required_on_activate': False,
@@ -63,6 +63,7 @@ fixture_base_props = {
     u'icon': {u'additionalProperties': False,
               u'description': u'Artifact icon.',
               u'filter_ops': [],
+              u'glareType': u'Blob',
               u'properties': {u'md5': {u'type': [u'string', u'null']},
                               u'sha1': {u'type': [u'string', u'null']},
                               u'sha256': {u'type': [u'string', u'null']},
@@ -86,6 +87,7 @@ fixture_base_props = {
             u'filter_ops': [u'eq',
                             u'neq',
                             u'in'],
+            u'glareType': u'String',
             u'maxLength': 255,
             u'pattern': u'^([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}'
                         u'-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}$',
@@ -96,6 +98,7 @@ fixture_base_props = {
                  u'filter_ops': [u'eq',
                                  u'neq',
                                  u'in'],
+                 u'glareType': u'String',
                  u'maxLength': 255,
                  u'required_on_activate': False,
                  u'type': [u'string',
@@ -104,6 +107,7 @@ fixture_base_props = {
                      u'filter_ops': [u'eq',
                                      u'neq',
                                      u'in'],
+                     u'glareType': u'String',
                      u'maxLength': 255,
                      u'required_on_activate': False,
                      u'type': [u'string',
@@ -114,6 +118,7 @@ fixture_base_props = {
                                   u'about an artifact.',
                   u'filter_ops': [u'eq',
                                   u'neq'],
+                  u'glareType': u'StringDict',
                   u'maxProperties': 255,
                   u'required_on_activate': False,
                   u'type': [u'object',
@@ -122,6 +127,7 @@ fixture_base_props = {
               u'filter_ops': [u'eq',
                               u'neq',
                               u'in'],
+              u'glareType': u'String',
               u'maxLength': 255,
               u'required_on_activate': False,
               u'sortable': True,
@@ -130,6 +136,7 @@ fixture_base_props = {
                u'filter_ops': [u'eq',
                                u'neq',
                                u'in'],
+               u'glareType': u'String',
                u'maxLength': 255,
                u'readOnly': True,
                u'required_on_activate': False,
@@ -140,6 +147,7 @@ fixture_base_props = {
                      u'filter_ops': [u'eq',
                                      u'neq',
                                      u'in'],
+                     u'glareType': u'StringDict',
                      u'maxProperties': 255,
                      u'properties': {u'company': {u'type': u'string'},
                                      u'href': {u'type': u'string'},
@@ -154,6 +162,7 @@ fixture_base_props = {
                  u'filter_ops': [u'eq',
                                  u'neq',
                                  u'in'],
+                 u'glareType': u'StringList',
                  u'items': {u'type': u'string'},
                  u'maxItems': 255,
                  u'required_on_activate': False,
@@ -169,6 +178,7 @@ fixture_base_props = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'sortable': True,
                 u'type': u'string'},
     u'supported_by': {u'additionalProperties': {u'type': u'string'},
@@ -177,6 +187,7 @@ fixture_base_props = {
                       u'filter_ops': [u'eq',
                                       u'neq',
                                       u'in'],
+                      u'glareType': u'StringDict',
                       u'maxProperties': 255,
                       u'required': [u'name'],
                       u'required_on_activate': False,
@@ -187,6 +198,7 @@ fixture_base_props = {
               u'filter_ops': [u'eq',
                               u'neq',
                               u'in'],
+              u'glareType': u'StringList',
               u'items': {u'type': u'string'},
               u'maxItems': 255,
               u'mutable': True,
@@ -203,6 +215,7 @@ fixture_base_props = {
                         u'lt',
                         u'lte'],
         u'format': u'date-time',
+        u'glareType': u'DateTime',
         u'readOnly': True,
         u'sortable': True,
         u'type': u'string'},
@@ -215,6 +228,7 @@ fixture_base_props = {
                                  u'gte',
                                  u'lt',
                                  u'lte'],
+                 u'glareType': u'String',
                  u'pattern': u'/^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-'
                              u'([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?'
                              u'(?:\\+[0-9A-Za-z-]+)?$/',
@@ -226,14 +240,11 @@ fixture_base_props = {
                                     u'artifact can be available to other '
                                     u'users.',
                     u'filter_ops': [u'eq'],
+                    u'glareType': u'String',
                     u'maxLength': 255,
                     u'sortable': True,
                     u'type': u'string'}
 }
-
-enabled_artifact_types = (
-    u'sample_artifact', u'images', u'heat_templates',
-    u'heat_environments', u'tosca_templates', u'murano_packages')
 
 
 def generate_type_props(props):
@@ -248,6 +259,7 @@ fixtures = {
             u'blob': {u'additionalProperties': False,
                       u'description': u'I am Blob',
                       u'filter_ops': [],
+                      u'glareType': u'Blob',
                       u'mutable': True,
                       u'properties': {
                           u'md5': {u'type': [u'string', u'null']},
@@ -276,26 +288,30 @@ fixtures = {
                                 u'null']},
             u'bool1': {u'default': False,
                        u'filter_ops': [u'eq'],
+                       u'glareType': u'Boolean',
                        u'required_on_activate': False,
                        u'type': [u'string',
                                  u'null']},
             u'bool2': {u'default': False,
                        u'filter_ops': [u'eq'],
+                       u'glareType': u'Boolean',
                        u'required_on_activate': False,
                        u'type': [u'string',
                                  u'null']},
-            u'dependency1': {u'filter_ops': [u'eq',
-                                             u'neq',
-                                             u'in'],
-                             u'required_on_activate': False,
-                             u'type': [u'string',
-                                       u'null']},
-            u'dependency2': {u'filter_ops': [u'eq',
-                                             u'neq',
-                                             u'in'],
-                             u'required_on_activate': False,
-                             u'type': [u'string',
-                                       u'null']},
+            u'link1': {u'filter_ops': [u'eq',
+                                       u'neq',
+                                       u'in'],
+                       u'glareType': u'Link',
+                       u'required_on_activate': False,
+                       u'type': [u'string',
+                                 u'null']},
+            u'link2': {u'filter_ops': [u'eq',
+                                       u'neq',
+                                       u'in'],
+                       u'glareType': u'Link',
+                       u'required_on_activate': False,
+                       u'type': [u'string',
+                                 u'null']},
             u'dict_of_blobs': {
                 u'additionalProperties': {
                     u'additionalProperties': False,
@@ -326,6 +342,7 @@ fixtures = {
                               u'null']},
                 u'default': {},
                 u'filter_ops': [],
+                u'glareType': u'BlobDict',
                 u'maxProperties': 255,
                 u'required_on_activate': False,
                 u'type': [u'object',
@@ -335,6 +352,7 @@ fixtures = {
                     u'type': u'string'},
                 u'default': {},
                 u'filter_ops': [u'eq'],
+                u'glareType': u'IntegerDict',
                 u'maxProperties': 255,
                 u'required_on_activate': False,
                 u'type': [u'object',
@@ -344,6 +362,7 @@ fixtures = {
                     u'type': u'string'},
                 u'default': {},
                 u'filter_ops': [u'eq'],
+                u'glareType': u'StringDict',
                 u'maxProperties': 255,
                 u'required_on_activate': False,
                 u'type': [u'object',
@@ -353,6 +372,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'StringDict',
                 u'maxProperties': 3,
                 u'properties': {
                     u'abc': {u'type': [u'string',
@@ -373,6 +393,7 @@ fixtures = {
                                         u'gte',
                                         u'lt',
                                         u'lte'],
+                        u'glareType': u'Float',
                         u'required_on_activate': False,
                         u'sortable': True,
                         u'type': [u'number',
@@ -384,6 +405,7 @@ fixtures = {
                                         u'gte',
                                         u'lt',
                                         u'lte'],
+                        u'glareType': u'Float',
                         u'required_on_activate': False,
                         u'sortable': True,
                         u'type': [u'number',
@@ -395,6 +417,7 @@ fixtures = {
                                       u'gte',
                                       u'lt',
                                       u'lte'],
+                      u'glareType': u'Integer',
                       u'required_on_activate': False,
                       u'sortable': True,
                       u'type': [u'integer',
@@ -406,6 +429,7 @@ fixtures = {
                                       u'gte',
                                       u'lt',
                                       u'lte'],
+                      u'glareType': u'Integer',
                       u'required_on_activate': False,
                       u'sortable': True,
                       u'type': [u'integer',
@@ -417,13 +441,15 @@ fixtures = {
                                                 u'gte',
                                                 u'lt',
                                                 u'lte'],
+                                u'glareType': u'Integer',
                                 u'maximum': 20,
-                                u'minumum': 10,
+                                u'minimum': 10,
                                 u'required_on_activate': False,
                                 u'type': [u'integer',
                                           u'null']},
             u'list_of_int': {u'default': [],
                              u'filter_ops': [u'eq'],
+                             u'glareType': u'IntegerList',
                              u'items': {
                                  u'type': u'string'},
                              u'maxItems': 255,
@@ -432,6 +458,7 @@ fixtures = {
                                        u'null']},
             u'list_of_str': {u'default': [],
                              u'filter_ops': [u'eq'],
+                             u'glareType': u'StringList',
                              u'items': {
                                  u'type': u'string'},
                              u'maxItems': 255,
@@ -443,6 +470,7 @@ fixtures = {
                                      u'eq',
                                      u'neq',
                                      u'in'],
+                                 u'glareType': u'StringList',
                                  u'items': {
                                      u'type': u'string'},
                                  u'maxItems': 3,
@@ -452,6 +480,7 @@ fixtures = {
                                  u'unique': True},
             u'small_blob': {u'additionalProperties': False,
                             u'filter_ops': [],
+                            u'glareType': u'Blob',
                             u'mutable': True,
                             u'properties': {
                                 u'md5': {u'type': [u'string', u'null']},
@@ -486,6 +515,7 @@ fixtures = {
                                       u'gte',
                                       u'lt',
                                       u'lte'],
+                      u'glareType': u'String',
                       u'maxLength': 255,
                       u'required_on_activate': False,
                       u'sortable': True,
@@ -498,6 +528,7 @@ fixtures = {
                                                 u'gte',
                                                 u'lt',
                                                 u'lte'],
+                                u'glareType': u'String',
                                 u'maxLength': 255,
                                 u'mutable': True,
                                 u'required_on_activate': False,
@@ -511,6 +542,7 @@ fixtures = {
                                 u'gte',
                                 u'lt',
                                 u'lte'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'type': [u'string',
                           u'null']},
@@ -526,6 +558,7 @@ fixtures = {
                                 u'gte',
                                 u'lt',
                                 u'lte'],
+                u'glareType': u'String',
                 u'maxLength': 10,
                 u'required_on_activate': False,
                 u'type': [u'string',
@@ -534,6 +567,7 @@ fixtures = {
                                   u'filter_ops': [u'eq',
                                                   u'neq',
                                                   u'in'],
+                                  u'glareType': u'String',
                                   u'maxLength': 255,
                                   u'readOnly': True,
                                   u'sortable': True,
@@ -542,6 +576,7 @@ fixtures = {
         }),
         u'required': [u'name'],
         u'title': u'Artifact type sample_artifact of version 1.0',
+        u'version': u'1.0',
         u'type': u'object'},
     u'tosca_templates': {
         u'name': u'tosca_templates',
@@ -550,6 +585,7 @@ fixtures = {
                 u'additionalProperties': False,
                 u'description': u'TOSCA template body.',
                 u'filter_ops': [],
+                u'glareType': u'Blob',
                 u'properties': {
                     u'md5': {u'type': [u'string', u'null']},
                     u'sha1': {u'type': [u'string', u'null']},
@@ -574,11 +610,13 @@ fixtures = {
                                  u'filter_ops': [u'eq',
                                                  u'neq',
                                                  u'in'],
+                                 u'glareType': u'String',
                                  u'maxLength': 255,
                                  u'type': [u'string',
                                            u'null']},
         }),
         u'required': [u'name'],
+        u'version': u'1.0',
         u'title': u'Artifact type tosca_templates of version 1.0',
         u'type': u'object'},
     u'murano_packages': {
@@ -591,6 +629,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'StringList',
                 u'items': {u'type': u'string'},
                 u'maxItems': 255,
                 u'mutable': True,
@@ -603,6 +642,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'StringList',
                 u'items': {u'type': u'string'},
                 u'maxItems': 255,
                 u'type': [u'array',
@@ -615,6 +655,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'LinkList',
                 u'items': {u'type': u'string'},
                 u'maxItems': 255,
                 u'required_on_activate': False,
@@ -625,6 +666,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'mutable': True,
                 u'type': [u'string',
@@ -635,6 +677,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'StringDict',
                 u'maxProperties': 255,
                 u'type': [u'object',
                           u'null']},
@@ -642,6 +685,7 @@ fixtures = {
                           u'filter_ops': [u'eq',
                                           u'neq',
                                           u'in'],
+                          u'glareType': u'StringList',
                           u'items': {u'type': u'string'},
                           u'maxItems': 255,
                           u'mutable': True,
@@ -651,6 +695,7 @@ fixtures = {
                 u'additionalProperties': False,
                 u'description': u'Murano Package binary.',
                 u'filter_ops': [],
+                u'glareType': u'Blob',
                 u'properties': {u'md5': {u'type': [u'string', u'null']},
                                 u'sha1': {u'type': [u'string', u'null']},
                                 u'sha256': {u'type': [u'string', u'null']},
@@ -679,11 +724,13 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'type': [u'string',
                           u'null']}
         }),
         u'required': [u'name'],
+        u'version': u'1.0',
         u'title': u'Artifact type murano_packages of version 1.0',
         u'type': u'object'},
     u'images': {
@@ -697,6 +744,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'required_on_activate': False,
                 u'type': [u'string',
@@ -705,6 +753,7 @@ fixtures = {
                             u'filter_ops': [u'eq',
                                             u'neq',
                                             u'in'],
+                            u'glareType': u'String',
                             u'maxLength': 255,
                             u'required_on_activate': False,
                             u'type': [u'string', u'null']},
@@ -720,6 +769,7 @@ fixtures = {
                                   u'filter_ops': [u'eq',
                                                   u'neq',
                                                   u'in'],
+                                  u'glareType': u'String',
                                   u'maxLength': 255,
                                   u'type': [u'string',
                                             u'null']},
@@ -739,11 +789,13 @@ fixtures = {
                              u'filter_ops': [u'eq',
                                              u'neq',
                                              u'in'],
+                             u'glareType': u'String',
                              u'maxLength': 255,
                              u'type': [u'string', u'null']},
             u'image': {u'additionalProperties': False,
                        u'description': u'Image binary.',
                        u'filter_ops': [],
+                       u'glareType': u'Blob',
                        u'properties': {
                            u'md5': {u'type': [u'string', u'null']},
                            u'sha1': {u'type': [u'string', u'null']},
@@ -773,6 +825,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'required_on_activate': False,
                 u'type': [u'string', u'null']},
@@ -784,6 +837,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'required_on_activate': False,
                 u'type': [u'string',
@@ -795,6 +849,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'pattern': u'^([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-'
                             u'([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-'
@@ -806,7 +861,8 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
-                u'minumum': 0,
+                u'glareType': u'Integer',
+                u'minimum': 0,
                 u'required_on_activate': False,
                 u'type': [u'integer', u'null']},
             u'min_ram': {
@@ -814,7 +870,8 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
-                u'minumum': 0,
+                u'glareType': u'Integer',
+                u'minimum': 0,
                 u'required_on_activate': False,
                 u'type': [u'integer', u'null']},
             u'os_distro': {
@@ -825,6 +882,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'required_on_activate': False,
                 u'type': [u'string', u'null']},
@@ -834,6 +892,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'required_on_activate': False,
                 u'type': [u'string', u'null']},
@@ -844,12 +903,14 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'String',
                 u'maxLength': 255,
                 u'pattern': u'^([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F])'
                             u'{4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}$',
                 u'required_on_activate': False,
                 u'type': [u'string', u'null']}}),
         u'required': [u'name'],
+        u'version': u'1.0',
         u'title': u'Artifact type images of version 1.0',
         u'type': u'object'},
     u'heat_templates': {
@@ -864,6 +925,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'StringDict',
                 u'maxProperties': 255,
                 u'mutable': True,
                 u'type': [u'object',
@@ -877,6 +939,7 @@ fixtures = {
                 u'filter_ops': [u'eq',
                                 u'neq',
                                 u'in'],
+                u'glareType': u'LinkDict',
                 u'maxProperties': 255,
                 u'mutable': True,
                 u'type': [u'object',
@@ -909,6 +972,7 @@ fixtures = {
                                 u'name  of template and value is nested '
                                 u'template body.',
                 u'filter_ops': [],
+                u'glareType': u'BlobDict',
                 u'maxProperties': 255,
                 u'type': [u'object',
                           u'null']},
@@ -916,6 +980,7 @@ fixtures = {
                 u'additionalProperties': False,
                 u'description': u'Heat template body.',
                 u'filter_ops': [],
+                u'glareType': u'Blob',
                 u'properties': {
                     u'md5': {u'type': [u'string', u'null']},
                     u'sha1': {u'type': [u'string', u'null']},
@@ -938,6 +1003,7 @@ fixtures = {
                           u'null']},
 
         }),
+        u'version': u'1.0',
         u'required': [u'name'],
         u'title': u'Artifact type heat_templates of version 1.0',
         u'type': u'object'},
@@ -948,6 +1014,7 @@ fixtures = {
                 u'additionalProperties': False,
                 u'description': u'Heat Environment text body.',
                 u'filter_ops': [],
+                u'glareType': u'Blob',
                 u'properties': {u'md5': {u'type': [u'string', u'null']},
                                 u'sha1': {u'type': [u'string', u'null']},
                                 u'sha256': {u'type': [u'string', u'null']},
@@ -969,70 +1036,40 @@ fixtures = {
 
         }),
         u'required': [u'name'],
+        u'version': u'1.0',
         u'title': u'Artifact type heat_environments of version 1.0',
+        u'type': u'object'},
+    u'all': {
+        u'name': u'all',
+        u'properties': generate_type_props({
+            u'type_name': {u'description': u'Name of artifact type.',
+                           u'filter_ops': [u'eq', u'neq', u'in'],
+                           u'glareType': u'String',
+                           u'maxLength': 255,
+                           u'type': [u'string', u'null']},
+
+        }),
+        u'required': [u'name'],
+        u'version': u'1.0',
+        u'title': u'Artifact type all of version 1.0',
         u'type': u'object'}
 }
 
 
-class TestSchemas(functional.FunctionalTest):
-
-    def setUp(self):
-        super(TestSchemas, self).setUp()
-        self.glare_server.deployment_flavor = 'noauth'
-
-        self.glare_server.enabled_artifact_types = ','.join(
-            enabled_artifact_types)
-        self.glare_server.custom_artifact_types_modules = (
-            'glare.tests.functional.sample_artifact')
-        self.start_servers(**self.__dict__.copy())
-
-    def tearDown(self):
-        self.stop_servers()
-        self._reset_database(self.glare_server.sql_connection)
-        super(TestSchemas, self).tearDown()
-
-    def _url(self, path):
-        return 'http://127.0.0.1:%d%s' % (self.glare_port, path)
-
-    def _check_artifact_method(self, url, status=200):
-        headers = {
-            'X-Identity-Status': 'Confirmed',
-        }
-        response = requests.get(self._url(url), headers=headers)
-        self.assertEqual(status, response.status_code, response.text)
-        if status >= 400:
-            return response.text
-        if ("application/json" in response.headers["content-type"] or
-                "application/schema+json" in response.headers["content-type"]):
-            return jsonutils.loads(response.text)
-        return response.text
-
-    def get(self, url, status=200, headers=None):
-        return self._check_artifact_method(url, status=status)
-
+class TestSchemas(base.TestArtifact):
     def test_schemas(self):
+        # Get schemas for specific artifact type
+        for at in self.enabled_types:
+            result = self.get(url='/schemas/%s' % at)
+            self.assertEqual(fixtures[at], result['schemas'][at],
+                             utils.DictDiffer(
+                                 fixtures[at]['properties'],
+                                 result['schemas'][at]['properties']))
 
         # Get list schemas of artifacts
         result = self.get(url='/schemas')
         self.assertEqual(fixtures, result['schemas'], utils.DictDiffer(
-            result['schemas'], fixtures))
-
-        # Get schemas for specific artifact type
-        for at in enabled_artifact_types:
-            result = self.get(url='/schemas/%s' % at)
-            self.assertEqual(fixtures[at], result['schemas'][at],
-                             utils.DictDiffer(
-                                 result['schemas'][at]['properties'],
-                                 fixtures[at]['properties']))
-
-        # Get schema of sample_artifact
-        result = self.get(url='/schemas/sample_artifact')
-        self.assertEqual(fixtures['sample_artifact'],
-                         result['schemas']['sample_artifact'],
-                         utils.DictDiffer(
-                             result['schemas']['sample_artifact'][
-                                 'properties'],
-                             fixtures['sample_artifact']['properties']))
+            fixtures, result['schemas']))
 
         # Validation of schemas
         result = self.get(url='/schemas')['schemas']

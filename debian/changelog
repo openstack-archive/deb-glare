@@ -1,3 +1,9 @@
+glare (0.2.0-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Ivan Udovichenko <iudovichenko@mirantis.com>  Thu, 06 Oct 2016 12:42:54 +0300
+
 glare (0.1.0-1) unstable; urgency=medium
 
   * Initial release. (Closes: #839231)

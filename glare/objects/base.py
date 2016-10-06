@@ -434,24 +434,24 @@ class BaseArtifact(base.VersionedObject):
                 else:
                     action = cls.activate
 
-        # check updates for dependencies and validate them
+        # check updates for links and validate them
         try:
             for key, value in six.iteritems(updates):
-                if cls.fields.get(key) is glare_fields.Dependency \
+                if cls.fields.get(key) is glare_fields.Link \
                         and value is not None:
                     # check format
-                    glare_fields.DependencyFieldType.coerce(None, key, value)
+                    glare_fields.LinkFieldType.coerce(None, key, value)
                     # check containment
-                    if glare_fields.DependencyFieldType.is_external(value):
-                        # validate external dependency
-                        cls._validate_external_dependency(value)
+                    if glare_fields.LinkFieldType.is_external(value):
+                        # validate external link
+                        cls._validate_external_link(value)
                     else:
-                        type_name = (glare_fields.DependencyFieldType.
+                        type_name = (glare_fields.LinkFieldType.
                                      get_type_name(value))
                         af_type = registry.get_artifact_type(type_name)
-                        cls._validate_soft_dependency(context, value, af_type)
+                        cls._validate_soft_link(context, value, af_type)
         except Exception as e:
-            msg = (_("Bad dependency in artifact %(af)s: %(msg)s")
+            msg = (_("Bad link in artifact %(af)s: %(msg)s")
                    % {"af": artifact.id, "msg": str(e)})
             raise exception.BadRequest(msg)
 
@@ -461,12 +461,12 @@ class BaseArtifact(base.VersionedObject):
         return action
 
     @classmethod
-    def _validate_external_dependency(cls, link):
+    def _validate_external_link(cls, link):
         with urlrequest.urlopen(link) as data:
             data.read(1)
 
     @classmethod
-    def _validate_soft_dependency(cls, context, link, af_type):
+    def _validate_soft_link(cls, context, link, af_type):
         af_id = link.split('/')[3]
         af_type.get(context, af_id)
 
@@ -1087,23 +1087,9 @@ class BaseArtifact(base.VersionedObject):
                 res[key] = val
         return res
 
-    @staticmethod
-    def schema_type(attr):
-        if isinstance(attr, fields.IntegerField):
-            return 'integer'
-        elif isinstance(attr, fields.FloatField):
-            return 'number'
-        elif isinstance(attr, fields.BooleanField):
-            return 'boolean'
-        elif isinstance(attr, glare_fields.List):
-            return 'array'
-        elif isinstance(attr, (glare_fields.Dict, glare_fields.BlobField)):
-            return 'object'
-        return 'string'
-
     @classmethod
     def schema_attr(cls, attr, attr_name=''):
-        attr_type = cls.schema_type(attr)
+        attr_type = utils.get_schema_type(attr)
         schema = {}
 
         # generate schema for validators
@@ -1112,6 +1098,7 @@ class BaseArtifact(base.VersionedObject):
 
         schema['type'] = (attr_type
                           if not attr.nullable else [attr_type, 'null'])
+        schema['glareType'] = utils.get_glare_type(attr)
         output_blob_schema = {
             'type': ['object', 'null'],
             'properties': {
@@ -1134,7 +1121,7 @@ class BaseArtifact(base.VersionedObject):
             schema['readOnly'] = True
 
         if isinstance(attr, glare_fields.Dict):
-            element_type = (cls.schema_type(attr.element_type)
+            element_type = (utils.get_schema_type(attr.element_type)
                             if hasattr(attr, 'element_type')
                             else 'string')
 
@@ -1156,7 +1143,7 @@ class BaseArtifact(base.VersionedObject):
 
         if attr_type == 'array':
             schema['items'] = {
-                'type': (cls.schema_type(attr.element_type)
+                'type': (utils.get_schema_type(attr.element_type)
                          if hasattr(attr, 'element_type')
                          else 'string')}
 
@@ -1193,9 +1180,64 @@ class BaseArtifact(base.VersionedObject):
                                                       attr_name=attr_name)
         schemas = {'properties': schemas_prop,
                    'name': cls.get_type_name(),
+                   'version': cls.VERSION,
                    'title': 'Artifact type %s of version %s' %
                             (cls.get_type_name(), cls.VERSION),
                    'type': 'object',
                    'required': ['name']}
 
         return schemas
+
+
+class ReadOnlyMixin(object):
+    """Mixin that disables all modifying actions on artifacts."""
+
+    @classmethod
+    def create(cls, context, values):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def update(cls, context, af, values):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def get_action_for_updates(cls, context, artifact, updates, registry):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def delete(cls, context, af):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def activate(cls, context, af, values):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def reactivate(cls, context, af, values):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def deactivate(cls, context, af, values):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def publish(cls, context, af, values):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def upload_blob(cls, context, af, field_name, fd, content_type):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def upload_blob_dict(cls, context, af, field_name, blob_key, fd,
+                         content_type):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def add_blob_location(cls, context, af, field_name, location, blob_meta):
+        raise exception.Forbidden("This type is read only.")
+
+    @classmethod
+    def add_blob_dict_location(cls, context, af, field_name,
+                               blob_key, location, blob_meta):
+        raise exception.Forbidden("This type is read only.")
