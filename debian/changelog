@@ -1,3 +1,10 @@
+glare (0.1.0-2) unstable; urgency=medium
+
+  * Debconf translation:
+    - it (Closes: #840004).
+
+ -- Thomas Goirand <zigo@debian.org>  Mon, 10 Oct 2016 13:31:34 +0200
+
 glare (0.1.0-1) unstable; urgency=medium
 
   * Initial release. (Closes: #839231)
